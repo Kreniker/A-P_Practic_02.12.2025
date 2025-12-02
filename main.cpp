@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 namespace top {
+
     struct p_t {
         int x, y;
     };
@@ -8,7 +9,8 @@ namespace top {
     struct f_t {
         p_t aa, bb;  
     };
-
+	size_t rows(f_t fr);
+	size_t cols(f_t fr);
     bool operator==(p_t a, p_t b);
     bool operator!=(p_t a, p_t b);
 
@@ -60,6 +62,16 @@ int main() {
     return err;
 }
 
+char * top::canvas(f_t fr, char fill)
+{
+	size_t s = rows(fr) * cols(fr);
+	char * c = new char [s];
+	for (size_t i = 0; i < s; ++i){
+		c[i] = fill;
+	}
+	return c;
+}
+
 top::f_t top::frame(const p_t * pts, size_t s)
 {
 	int minx = pts[0].x;
@@ -99,4 +111,13 @@ bool top::operator==(p_t a, p_t b) {
 
 bool top::operator!=(p_t a, p_t b) {
     return !(a == b);
+}
+
+size_t top::rows(f_t fr)
+{
+	return fr.bb.y - fr.aa.y + 1;
+}
+size_t top::cols(f_t fr)
+{
+	return fr.bb.x - fr.aa.x + 1;
 }
