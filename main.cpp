@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <stdexcept>
 namespace top {
     struct p_t {
         int x, y;
@@ -18,6 +18,7 @@ namespace top {
         virtual p_t next(p_t prev) const = 0;
     };
     struct Dot: IDraw {
+    	explicit Dot(p_t dd);
     	p_t begin() const override;
     	p_t next(p_t prev) const override;
     	p_t d;
@@ -25,11 +26,26 @@ namespace top {
 }
 
 int main() {
-    using namespace top;
-    p_t a{1, 1}, b{1, 1};
-    std::cout << (a == b) << "\n";
+	using namespace top;
+	int err = 0;
+    IDraw* shp[3] = {};
+    try{
+	    shp [0] = new Dot({0, 0});
+	    shp [1] = new Dot({2, 3});
+		
+	    
+	} catch (...){
+		std::cerr << "Error!\n";
+		err = 1;
+	}
+    delete shp[1];
+    delete shp[0];
+    return err;
 }
-
+top::Dot::Dot(p_t dd):
+ IDraw(),
+ d{dd}
+{}
 top::p_t top::Dot::begin() const {
 	return d;
 }
