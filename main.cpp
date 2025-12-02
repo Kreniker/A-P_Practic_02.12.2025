@@ -20,6 +20,7 @@ namespace top {
         virtual p_t next(p_t prev) const = 0;
     };
     p_t * extend (const p_t * pts, size_t s, p_t fill);
+    void extend(p_t ** pts, size_t & s, p_t fill);
     struct Dot: IDraw {
     	explicit Dot(p_t dd);
     	p_t begin() const override;
@@ -70,7 +71,7 @@ void top::paint(p_t p, char * cnv, f_t fr, char fill)
 	cnv[dy * cols(fr) + dx] = fill;
 }
 
-p_t * top::extend (const p_t * pts, size_t s, p_t fill)
+top::p_t * top::extend (const p_t * pts, size_t s, p_t fill)
 {
 	p_t * r = new p_t[s+1];
 	for (size_t i = 0; i < s; i++){
@@ -80,9 +81,23 @@ p_t * top::extend (const p_t * pts, size_t s, p_t fill)
 	return r;
 }
 
-void append(const IDraw * sh, p_t ** ppts, size_t & s)
+void top::extend(p_t ** pts, size_t & s, p_t fill)
 {
+	p_t*r = extend(*pts, s, fill);
+	delete[] *pts;
+	++s;
+	*pts = r;
+}
+
+void top::append(const IDraw * sh, p_t ** ppts, size_t & s)
+{
+	extend(ppts, s, sh -> begin());
+	p_t b = sh -> begin();
 	
+	while (sh -> next(b) != sh -> begin()){
+		b = sh -> next(b);
+		extend(ppts, s, b);
+	}
 }
 
 void top::flush(std::ostream& os, const char * cnv, f_t fr)
