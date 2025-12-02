@@ -59,13 +59,33 @@ int main() {
     delete shp[0];
     return err;
 }
+
+top::f_t top::frame(const p_t * pts, size_t s)
+{
+	int minx = pts[0].x;
+	int miny = pts[0].y;
+	int maxx = pts[0].x;
+	int maxy = pts[0].y;
+	for (size_t i = 0; i < s; ++i){
+		minx = std::min(minx, pts[i].x);
+		miny = std::min(miny, pts[i].y);
+		maxx = std::max(maxx, pts[i].x);
+		maxy = std::max(maxy, pts[i].y);
+	}
+	p_t a{minx, miny};
+	p_t b{maxx, maxy};
+	return f_t{a, b};
+}
+
 top::Dot::Dot(p_t dd):
  IDraw(),
  d{dd}
 {}
+
 top::p_t top::Dot::begin() const {
 	return d;
 }
+
 top::p_t top::Dot::next(p_t prev) const {
 	if (prev != d){
 		throw std::logic_error("bad prev");
