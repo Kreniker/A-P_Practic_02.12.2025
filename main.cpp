@@ -74,7 +74,6 @@ namespace top {
     	void append(const IDraw & dr);
     	size_t points() const;
     	size_t layers() const;
-    	size_t layer(size_t i) const;
     	p_t point(size_t i) const;
     	size_t start(size_t i) const;
     	size_t end(size_t i) const;
@@ -371,9 +370,9 @@ top::Layers::~Layers()
 }
 
 void top::Layers::append(const IDraw& dr){
-	size_t ext_sizes = new size_t[layers_ + 1];
+	size_t * ext_sizes = new size_t[layers_ + 1];
 	try {
-		append(&dr, &pts_, points_);
+		top::append(&dr, &pts_, points_);
 	} catch (...) {
 		delete [] ext_sizes;
 		throw;
