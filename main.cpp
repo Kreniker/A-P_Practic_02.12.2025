@@ -59,7 +59,6 @@ namespace top {
     void append(const IDraw * sh, p_t ** ppts, size_t & s);
     f_t frame(const p_t * pts, size_t s);
     struct Layers;
-    f_t frame(const Layers& ls);
     char * canvas(f_t fr, char fill);
     void paint(p_t p, char* cnv, f_t fr, char fill);
     void flush(std::ostream& os, const char * cnv, f_t fr);
@@ -72,11 +71,24 @@ namespace top {
     	Layers& operator=(Layers&&) = delete;
     	
     	void append(const IDraw & dr);
-    	size_t points() const;
-    	size_t layers() const;
-    	p_t point(size_t i) const;
-    	size_t start(size_t i) const;
-    	size_t end(size_t i) const;
+    	f_t frame() const {
+    		return top::frame(pts_, points_);
+    	}
+    	size_t points() const{
+    		return points_;
+    	}
+    	size_t layers() const{
+    		return layers_;
+    	}
+    	p_t point(size_t i) const{
+    		return pts_[i];
+    	}
+    	size_t start(size_t i) const{
+    		return !i ? 0 : sizes_[i-1];
+    	}
+    	size_t end(size_t i) const{
+    		return sizes_[i];
+    	}
       	private:
     		size_t points_;
     		p_t * pts_;
@@ -99,7 +111,7 @@ int main() {
 		for (size_t i = 0; i < 5; ++i){
 			layers.append(*(shp[i]));
 		}
-		f_t fr = frame(layers);
+		f_t fr = layers.frame();
 		char * cnv = canvas(fr, '.');
 		const char * brush = "#0%$*";
 		for (size_t k = 0; k < layers.layers(); ++k){
@@ -385,3 +397,4 @@ void top::Layers::append(const IDraw& dr){
 	sizes_ = ext_sizes;
 	++layers_;
 }
+
