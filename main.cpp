@@ -265,3 +265,13 @@ top::p_t top::Square::next(p_t prev) const {
     }
     return start_point;
 }
+
+top::Rect::Rect(p_t pos, int w, int h) : rect{pos, {pos.x + w, pos.y + h}}, IDraw()
+{
+	if (w <= 0 or h <= 0){
+		throw std::logic_error("bad rect");
+	}
+}
+
+top::Rect::Rect(p_t a, p_t b): Rect(a, b.x - a.x, b.y - a.y)
+{}
