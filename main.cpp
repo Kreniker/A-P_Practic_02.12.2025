@@ -41,6 +41,13 @@ namespace top {
     	p_t start_point;
     	int edge;
     };
+    struct Rect : IDraw {
+    	Rect(p_t pos, int w, int h);
+    	Rect(p_t a, p_t b);
+		p_t begin() const override;
+		p_t next(p_t prev) const override;
+    	f_t rect;
+    }
     void append(const IDraw * sh, p_t ** ppts, size_t & s);
     f_t frame(const p_t * pts, size_t s);
     char * canvas(f_t fr, char fill);
@@ -233,34 +240,26 @@ top::p_t top::Square::next(p_t prev) const {
     if (edge == 1) {
         return start_point;
     }
-    
     int dx = prev.x - start_point.x;
     int dy = prev.y - start_point.y;
-    
     if (dy == 0 && dx < edge - 1) {
         return {prev.x + 1, prev.y};
     }
-    
     if (dx == edge - 1 && dy == 0) {
         return {prev.x, prev.y + 1};
     }
-    
     if (dx == edge - 1 && dy < edge - 1) {
         return {prev.x, prev.y + 1};
     }
-    
     if (dx == edge - 1 && dy == edge - 1) {
         return {prev.x - 1, prev.y};
     }
-    
     if (dy == edge - 1 && dx > 0) {
         return {prev.x - 1, prev.y};
     }
-    
     if (dx == 0 && dy == edge - 1) {
         return {prev.x, prev.y - 1};
     }
-    
     if (dx == 0 && dy > 1) {
         return {prev.x, prev.y - 1};
     }
