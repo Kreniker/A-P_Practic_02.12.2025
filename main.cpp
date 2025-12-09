@@ -64,15 +64,18 @@ namespace top {
     struct Layers {
     	Layers();
     	~Layers();
-    	Layers(const& Layers) = delete;
-    	Layers& operator=(const& Layers) = delete;
+    	Layers(const Layers&) = delete;
+    	Layers& operator=(const Layers&) = delete;
     	Layers(Layers&&) = delete;
     	void append(const IDraw & dr);
     	size_t points() const;
     	size_t layers() const;
     	size_t layer(size_t i) const;
     	p_t point(size_t i) const;
-    	private:
+    	size_t start(size_t i) const;
+    	size_t end(size_t i) const;
+    	f_t frame() const;
+      	private:
     		size_t points_;
     		p_t * pts_;
     		size_t layers_;
@@ -84,9 +87,7 @@ int main() {
 	using namespace top;
 	int err = 0;
     IDraw* shp[5] = {};
-    size_t sizes[5] = {};
-    p_t * pts = nullptr;
-    size_t s = 0;
+	Layers layers;
     try{
 	    shp [0] = new Rect({-3, 4}, 4, 6);
 	    shp [1] = new FRect({3, 4}, 6, 3);
@@ -94,17 +95,16 @@ int main() {
 	    shp [3] = new Vline({-2, 0}, 5);
 	    shp [4] = new Square({1, 1}, 4);
 		for (size_t i = 0; i < 5; ++i){
-			append(shp[i], &pts, s);
-			sizes[i] = s;
+			layers.append(*(shp[i]));
 		}
-		f_t fr = frame(pts, s);
+		f_t fr = layers.frame();
 		char * cnv = canvas(fr, '.');
 		const char * brush = "#0%$*";
-		for (size_t k = 0; k < 5; ++k){
-			size_t start = !k ? 0 : sizes[k - 1];
-			size_t end = sizes[k];
+		for (size_t k = 0; k < layers.layers(); ++k){
+			size_t start = layers.start(k);
+			size_t end = layers.end(k);
 			for (size_t i = start; i < end; ++i){
-				paint(pts[i], cnv, fr, brush[k]);
+				paint(layers.point(i), cnv, fr, brush[k]);
 			}	
 		}
 	    flush (std::cout, cnv, fr);
