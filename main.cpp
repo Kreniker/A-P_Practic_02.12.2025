@@ -61,14 +61,30 @@ namespace top {
     char * canvas(f_t fr, char fill);
     void paint(p_t p, char* cnv, f_t fr, char fill);
     void flush(std::ostream& os, const char * cnv, f_t fr);
-    
+    struct Layers {
+    	Layers();
+    	~Layers();
+    	Layers(const& Layers) = delete;
+    	Layers& operator=(const& Layers) = delete;
+    	Layers(Layers&&) = delete;
+    	void append(const IDraw & dr);
+    	size_t points() const;
+    	size_t layers() const;
+    	size_t layer(size_t i) const;
+    	p_t point(size_t i) const;
+    	private:
+    		size_t points_;
+    		p_t * pts_;
+    		size_t layers_;
+    		size_t * sizes_;
+    };
 }
 
 int main() {
 	using namespace top;
 	int err = 0;
     IDraw* shp[5] = {};
-    size_t sizes[3] = {};
+    size_t sizes[5] = {};
     p_t * pts = nullptr;
     size_t s = 0;
     try{
