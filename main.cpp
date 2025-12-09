@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <stdexcept>
 namespace top {
 
@@ -48,6 +49,13 @@ namespace top {
 		p_t next(p_t prev) const override;
     	f_t rect;
     };
+    struct FRect : IDraw {
+    	FRect(p_t pos, int w, int h);
+    	FRect(p_t a, p_t b);
+    	p_t begin() const override;
+    	p_t next(p_t prev) const override;
+    	f_t rect;
+    };
     void append(const IDraw * sh, p_t ** ppts, size_t & s);
     f_t frame(const p_t * pts, size_t s);
     char * canvas(f_t fr, char fill);
@@ -60,21 +68,28 @@ int main() {
 	using namespace top;
 	int err = 0;
     IDraw* shp[5] = {};
+    size_t sizes[3] = {};
     p_t * pts = nullptr;
     size_t s = 0;
     try{
 	    shp [0] = new Rect({-3, 4}, 4, 6);
-	    shp [1] = new Dot({2, 3});
+	    shp [1] = new FRect({3, 4}, 6, 3);
 	    shp [2] = new Dot({-5, -2});
 	    shp [3] = new Vline({-2, 0}, 5);
 	    shp [4] = new Square({1, 1}, 4);
 		for (size_t i = 0; i < 5; ++i){
 			append(shp[i], &pts, s);
+			sizes[i] = s;
 		}
 		f_t fr = frame(pts, s);
 		char * cnv = canvas(fr, '.');
-		for (size_t i = 0; i < s; ++i){
-			paint(pts[i], cnv, fr, '#');
+		const char * brush = "#0%$*";
+		for (size_t k = 0; k < 5; ++k){
+			size_t start = !k ? 0 : sizes[k - 1];
+			size_t end = sizes[k];
+			for (size_t i = start; i < end; ++i){
+				paint(pts[i], cnv, fr, brush[k]);
+			}	
 		}
 	    flush (std::cout, cnv, fr);
 	    delete[] cnv;
@@ -294,4 +309,31 @@ top::p_t top::Rect::next(p_t prev) const {
 		return {prev.x - 1, prev.y};
 	}
 	throw std::logic_error("bad impl");
+}
+
+top::FRect::FRect(p_t pos, int w, int h) : rect{pos, {pos.x + w, pos.y + h}}, IDraw()
+{
+	if (w <= 0 or h <= 0){
+		throw std::logic_error("bad filled rect");
+	}
+}
+
+top::FRect::FRect(p_t a, p_t b) : FRect(a, b.x - a.x, b.y - a.y)
+{}
+top::p_t top::FRect::begin() const {
+	return rect.aa;
+}
+
+top::p_t top::FRect::next(p_t prev) const
+{
+	if (prev.x < rect.bb.x){
+		return {prev.x + 1, prev.y};
+	}
+	if (prev.x == rect.bb.x && prev.y < rect.bb.y){
+		return {rect.aa.x, prev.y + 1};
+	}
+	if (prev == rect.bb){
+		return rect.aa;
+	}
+	throw std::logic_error("bad filled impl");
 }
