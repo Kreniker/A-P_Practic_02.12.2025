@@ -47,7 +47,7 @@ namespace top {
 		p_t begin() const override;
 		p_t next(p_t prev) const override;
     	f_t rect;
-    }
+    };
     void append(const IDraw * sh, p_t ** ppts, size_t & s);
     f_t frame(const p_t * pts, size_t s);
     char * canvas(f_t fr, char fill);
@@ -63,7 +63,7 @@ int main() {
     p_t * pts = nullptr;
     size_t s = 0;
     try{
-	    shp [0] = new Dot({0, 0});
+	    shp [0] = new Rect({-3, 4}, 4, 6);
 	    shp [1] = new Dot({2, 3});
 	    shp [2] = new Dot({-5, -2});
 	    shp [3] = new Vline({-2, 0}, 5);
@@ -275,3 +275,23 @@ top::Rect::Rect(p_t pos, int w, int h) : rect{pos, {pos.x + w, pos.y + h}}, IDra
 
 top::Rect::Rect(p_t a, p_t b): Rect(a, b.x - a.x, b.y - a.y)
 {}
+
+top::p_t top::Rect::begin() const {
+	return rect.aa;
+}
+
+top::p_t top::Rect::next(p_t prev) const {
+	if (prev.x == rect.aa.x and prev.y < rect.bb.y){
+		return {prev.x, prev.y + 1};
+	}
+	if (prev.y == rect.bb.y && prev.x < rect.bb.x){
+		return {prev.x + 1, prev.y};
+	}
+	if (prev.x == rect.bb.x && prev.y > rect.aa.y) {
+		return {prev.x, prev.y - 1};
+	}
+	if (prev.y  == rect.aa.y && prev.x > rect.aa.x){
+		return {prev.x - 1, prev.y};
+	}
+	throw std::logic_error("bad impl");
+}
